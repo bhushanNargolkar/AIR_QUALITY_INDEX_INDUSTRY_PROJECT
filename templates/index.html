@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AQI Trends</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+        .form-select {
+            border-radius: 10px;
+            border: 1px solid #cbd5e0;
+        }
+        .form-select:focus {
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+        }
+        .btn-primary {
+            background: #4299e1;
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            background: #3182ce;
+        }
+        .visualization-options {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .viz-type-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #4299e1;
+            border-radius: 8px;
+            background: transparent;
+            color: #4299e1;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .viz-type-btn.active {
+            background: #4299e1;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Air Quality Index Analysis</h2>
+        <div class="visualization-options">
+            <button class="viz-type-btn active" data-type="line">Line Chart</button>
+            <button class="viz-type-btn" data-type="bar">Bar Chart</button>
+            <button class="viz-type-btn" data-type="heatmap">Heatmap</button>
+        </div>
+        <form action="/plot" method="post" class="mt-4">
+            <div class="mb-3">
+                <label for="city" class="form-label">Select City:</label>
+                <select name="city" id="city" class="form-select" required>
+                    {% for city in cities %}
+                    <option value="{{ city }}">{{ city.capitalize() }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="pollutant" class="form-label">Select Pollutant:</label>
+                <select name="pollutant" id="pollutant" class="form-select" required>
+                    {% for pollutant in pollutants %}
+                    <option value="{{ pollutant }}">{{ pollutant.upper() }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="time_range" class="form-label">Select Time Range:</label>
+                <select name="time_range" id="time_range" class="form-select" required>
+                    <option value="1day">Past 24 Hours</option>
+                    <option value="1week">Past Week</option>
+                    <option value="1month">Past Month</option>
+                </select>
+            </div>
+            <input type="hidden" name="viz_type" id="viz_type" value="line">
+            <button type="submit" class="btn btn-primary w-100">Generate Visualization</button>
+        </form>
+    </div>
+
+    <script>
+        document.querySelectorAll('.viz-type-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.viz-type-btn').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('viz_type').value = this.dataset.type;
+            });
+        });
+    </script>
+</body>
+</html>
